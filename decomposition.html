@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-ELT - Decomposition</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Playfair+Display:wght@700;800&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles_final.css">
+    <style>
+        .back-nav { display: flex; align-items: center; gap: 15px; margin: 60px 0 25px 0; position: relative; }
+        .back-circle { 
+            width: 40px; 
+            height: 40px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            transition: 0.3s;
+            background: transparent;
+        }
+        .back-circle:hover { transform: translateX(-5px) scale(1.1); }
+        .fat-arrow {
+            width: 35px;
+            height: 35px;
+            color: #16a34a; /* Green */
+        }
+        
+        .content-scroll { flex: 1; overflow-y: auto; padding-right: 5px; }
+        .content-scroll::-webkit-scrollbar { width: 4px; }
+        .content-scroll::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        .decomp-section { margin-bottom: 25px; }
+        .decomp-section h3 { font-size: 18px; margin-bottom: 12px; color: #064e3b; border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 4px; }
+
+        .item-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.05); transition: 0.3s; cursor: pointer; }
+        .item-card:hover { transform: translateX(5px); border-color: var(--blue); }
+        .item-card h4 { font-size: 15px; color: #1a1a1a; margin-bottom: 4px; }
+        .item-card p { font-size: 11px; color: #64748b; line-height: 1.4; }
+
+
+        /* Quiz Styles */
+        .quiz-overlay { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: #f8f6ec url('batik_bg.png?v=2026') center/cover no-repeat !important;
+            z-index: 5000; 
+            display: none; 
+            flex-direction: column; 
+            padding: 50px 25px 80px 25px; 
+        }
+        .question-box { 
+            flex: 1; 
+            background: linear-gradient(rgba(6, 78, 59, 0.8), rgba(6, 78, 59, 0.8)), url('login_bg_clean.png') center/cover no-repeat; 
+            padding: 25px; 
+            border-radius: 40px; 
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(190, 242, 100, 0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+        .option-btn { 
+            width: 100%; 
+            padding: 18px 20px; 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 18px; 
+            margin-bottom: 15px; 
+            text-align: left; 
+            border: 1px solid rgba(255,255,255,0.2); 
+            font-size: 16px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            color: white;
+            line-height: 1.4;
+        }
+        .option-btn:hover { 
+            background: rgba(190, 242, 100, 0.25); 
+            border-color: #bef264; 
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="dashboard-wrapper" style="background: #f8f6ec url('batik_bg.png?v=2026') center/cover no-repeat !important; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            <!-- Status Bar -->
+            <div class="status-bar" style="color: #1a1a1a !important;">
+                <span>9:41</span>
+                <div class="status-icons">📶 🔋</div>
+            </div>
+
+            <main class="page-content">
+                <div class="back-nav">
+                    <div class="back-circle" onclick="window.location.href='dashboard.html'">
+                        <svg viewBox="0 0 24 24" class="fat-arrow" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </div>
+                    <h2 class="serif" style="font-size: 20px; font-weight: 800;">Module 1: Decomposition</h2>
+                </div>
+
+                <div class="tab-bar">
+                    <button class="tab-btn active" onclick="showTab('material')">Material Breakdown</button>
+                    <button class="tab-btn" onclick="showTab('pedagogy')">Teaching Stages</button>
+                </div>
+
+                <div class="content-scroll" id="material-content">
+                    <div class="decomp-section">
+                        <h3>Descriptive Text Breakdown</h3>
+                        <div class="item-card" onclick="startQuiz('vocab')">
+                            <h4>Vocabulary Management</h4>
+                            <p>Identifying nouns and context-specific words (Animals, Places, Persons).</p>
+                        </div>
+                        <div class="item-card" onclick="startQuiz('adj')">
+                            <h4>Adjectives Usage</h4>
+                            <p>Describing physical appearance, personality, and sensory details.</p>
+                        </div>
+                        <div class="item-card" onclick="startQuiz('pattern')">
+                            <h4>Sentence Patterns</h4>
+                            <p>Simple Present Tense (Subject + is/am/are + Adj) and identifying verbs.</p>
+                        </div>
+                        <div class="item-card" onclick="startQuiz('practice')">
+                            <h4>Speaking Practice</h4>
+                            <p>Oral descriptive presentation skills for primary students.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-scroll" id="pedagogy-content" style="display: none;">
+                    <div class="decomp-section">
+                        <h3>Learning Activity Design</h3>
+                        <div class="item-card" onclick="showDetail('1. Opening', 'Start with a high-energy routine: Orientation (greeting), Motivation (song/game), and Perception (connecting to prior knowledge).')"><h4>1. Opening</h4><p>Orientation, motivation, and perception building.</p></div>
+                        <div class="item-card" onclick="showDetail('2. Modeling', 'The teacher demonstrates the language. Use big gestures, visuals, and clear pronunciation so students have a solid algorithm to follow.')"><h4>2. Modeling</h4><p>Showing example texts and teacher demonstration.</p></div>
+                        <div class="item-card" onclick="showDetail('3. Guided Practice', 'Work together. Use scaffolding techniques like fill-in-the-blanks or group matching games before asking students to work alone.')"><h4>3. Guided Practice</h4><p>Collaborative descriptive writing/speaking with teacher help.</p></div>
+                        <div class="item-card" onclick="showDetail('4. Independent Practice', 'Students apply the knowledge. Let them create their own simple descriptive sentences or drawings based on the model.')"><h4>4. Independent Practice</h4><p>Student creating their own descriptive text independently.</p></div>
+                        <div class="item-card" onclick="showDetail('5. Reflection', 'End with a check-in. Ask \"What did we learn today?\" and \"How do you feel?\". This closes the pedagogical loop.')"><h4>5. Reflection</h4><p>Evaluating learning outcomes and emotional check-in.</p></div>
+                    </div>
+                </div>
+
+                <button class="btn-take-quiz" style="background: #bef264; color: #064e3b;" onclick="startMainQuiz()">TAKE 10-QUESTION QUIZ</button>
+            </main>
+
+            <!-- Detail Modal -->
+            <div id="detail-modal" class="quiz-overlay" style="padding: 100px 40px; justify-content: center; background: rgba(0,0,0,0.85) !important;">
+                <div class="question-box" style="background: white; color: #1a1a1a; min-height: 250px; border: none;">
+                    <h3 id="detail-title" class="serif" style="color: #064e3b; margin-bottom: 15px;">Stage Detail</h3>
+                    <p id="detail-text" style="font-size: 15px; line-height: 1.6; color: #4b5563;"></p>
+                    <button class="btn-signin" style="margin-top: auto; background: #064e3b; color: white;" onclick="closeDetail()">CLOSE</button>
+                </div>
+            </div>
+
+            <!-- Detail Modal -->
+            <div id="detail-modal" class="quiz-overlay" style="padding: 100px 40px; justify-content: center; background: rgba(0,0,0,0.85) !important;">
+                <div class="question-box" style="background: white; color: #1a1a1a; min-height: 250px; border: none;">
+                    <h3 id="detail-title" class="serif" style="color: #064e3b; margin-bottom: 15px;">Stage Detail</h3>
+                    <p id="detail-text" style="font-size: 15px; line-height: 1.6; color: #4b5563;"></p>
+                    <button class="btn-signin" style="margin-top: auto; background: #064e3b; color: white;" onclick="closeDetail()">CLOSE</button>
+                </div>
+            </div>
+
+            <!-- Quiz Overlay -->
+            <div id="quiz-overlay" class="quiz-overlay">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: #1a1a1a;">
+                    <h3 class="serif" id="quiz-title" style="color: #1a1a1a;">Knowledge Check</h3>
+                    <span id="q-count" style="font-weight: 800; color: #064e3b;">1/10</span>
+                </div>
+                <div class="question-box">
+                    <p id="q-text" style="font-size: 18px; font-weight: 600; color: white; margin-bottom: 25px;"></p>
+                    <div id="options-container"></div>
+                </div>
+            </div>
+
+            <!-- Bottom Nav -->
+            <nav class="bottom-nav">
+                <div class="nav-btn btn-home" onclick="window.location.href='dashboard.html'">🏠</div>
+                <div class="nav-btn btn-stats" onclick="window.location.href='analytics.html'">📊</div>
+                <div class="nav-btn btn-trophy">🏆</div>
+                <div class="nav-btn btn-profile">👤</div>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "In teaching Descriptive Text to PGSD students, which adjective category is most vital for animal description?", a: ["Physical traits", "Abstract emotions", "Political status", "Technical specs"], correct: 0, clue: "Think about how we describe what an animal looks like (fur, color, size)." },
+            { q: "Which tense is predominantly used in Descriptive Text?", a: ["Past Continuous", "Simple Present", "Future Perfect", "Past Tense"], correct: 1, clue: "We describe things as they are right now, not as they were." },
+            { q: "The goal of 'Modeling' in learning activities is to...", a: ["Give a final exam", "Provide a clear example", "Check attendance", "Play games"], correct: 1, clue: "Teachers use modeling to show students a sample of the desired result." },
+            { q: "Vocabulary decomposition involves breaking a text into...", a: ["Paragraphs only", "Nouns, Verbs, Adjectives", "Just the title", "Author's name"], correct: 1, clue: "It involves identifying parts of speech relevant to the description." },
+            { q: "Guided Practice should occur...", a: ["Before opening", "After modeling", "After independent work", "During reflection"], correct: 1, clue: "First teacher shows (modeling), then students try with help (guided)." },
+            { q: "Adjectives like 'large', 'brown', and 'friendly' are used to describe...", a: ["Procedures", "Arguments", "Physical & Personality", "Dates"], correct: 2, clue: "These words describe how something looks and behaves." },
+            { q: "Independent Practice serves to...", a: ["Group students", "Assess individual mastery", "Watch videos", "Clean the class"], correct: 1, clue: "This is the 'final boss' where students work alone to show what they know." },
+            { q: "Sentence Pattern 'S + is + Adjective' is used for...", a: ["Action verbs", "Describing states", "Asking questions", "Future plans"], correct: 1, clue: "Example: 'The cat is big'. It describes the state of the cat." },
+            { q: "Reflective activities usually happen at...", a: ["The start", "The end", "The middle", "Home only"], correct: 1, clue: "Reflecting means looking back at what has been learned." },
+            { q: "Speaking Practice in PGSD focuses on...", a: ["Academic writing", "Pronunciation & fluency", "Silent reading", "Grammar drills only"], correct: 1, clue: "It's about how students communicate the descriptive text orally." }
+        ];
+
+        let currentQ = 0;
+        let attempts = 3;
+
+        function showTab(type) {
+            document.getElementById('material-content').style.display = type === 'material' ? 'block' : 'none';
+            document.getElementById('pedagogy-content').style.display = type === 'pedagogy' ? 'block' : 'none';
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function showDetail(title, text) {
+            document.getElementById('detail-title').innerText = title;
+            document.getElementById('detail-text').innerText = text;
+            document.getElementById('detail-modal').style.display = 'flex';
+        }
+
+        function closeDetail() {
+            document.getElementById('detail-modal').style.display = 'none';
+        }
+
+        function startMainQuiz() {
+            document.getElementById('quiz-overlay').style.display = 'flex';
+            currentQ = 0;
+            attempts = 3;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQ];
+            document.getElementById('q-count').innerText = `${currentQ + 1}/10`;
+            document.getElementById('q-text').innerText = q.q;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = `
+                <div id="feedback-msg" style="font-size: 14px; font-weight: 800; margin-bottom: 10px; display: none;"></div>
+                <div id="attempt-info" style="font-size: 11px; color: #e2e8f0; margin-bottom: 15px; font-weight: 700;">Attempts remaining: ${attempts}</div>
+                <div id="clue-box" style="display: none; background: #fffbeb; border: 1px solid #fcd34d; padding: 10px; border-radius: 10px; font-size: 12px; color: #92400e; margin-bottom: 15px; font-style: italic;">
+                    <strong>💡 Clue:</strong> ${q.clue}
+                </div>
+                <div id="options-list"></div>
+            `;
+
+            const list = document.getElementById('options-list');
+            q.a.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.id = `opt-${idx}`;
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(idx);
+                list.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(idx) {
+            const q = questions[currentQ];
+            const feedback = document.getElementById('feedback-msg');
+            const attemptInfo = document.getElementById('attempt-info');
+            const clueBox = document.getElementById('clue-box');
+            const clickedBtn = document.getElementById(`opt-${idx}`);
+
+            feedback.style.display = 'block';
+
+            if (idx === q.correct) {
+                feedback.innerText = "✓ CORRECT! Well done.";
+                feedback.style.color = "#bef264"; /* Brighter lime */
+                clickedBtn.style.background = "rgba(190, 242, 100, 0.3)";
+                clickedBtn.style.borderColor = "#bef264";
+                
+                setTimeout(() => {
+                    if (currentQ < questions.length - 1) {
+                        currentQ++;
+                        attempts = 3;
+                        loadQuestion();
+                    } else {
+                        window.location.href = 'dashboard.html?completed=1';
+                    }
+                }, 1200);
+            } else {
+                attempts--;
+                feedback.innerText = "✗ INCORRECT. Try again!";
+                feedback.style.color = "#fca5a5"; /* Brighter red/coral */
+                clickedBtn.style.background = "rgba(239, 68, 68, 0.2)";
+                clickedBtn.style.borderColor = "#ef4444";
+                
+                attemptInfo.innerText = `Attempts remaining: ${attempts}`;
+                
+                if (attempts <= 0) {
+                    clueBox.style.display = 'block';
+                    attemptInfo.innerText = "Keep trying! Use the clue above.";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

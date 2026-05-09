@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-ELT - Pattern Recognition</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Playfair+Display:wght@700;800&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles_final.css">
+    <style>
+        .back-nav { display: flex; align-items: center; gap: 15px; margin: 60px 0 25px 0; position: relative; }
+        .back-circle { 
+            width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; background: transparent;
+        }
+        .back-circle:hover { transform: translateX(-5px) scale(1.1); }
+        .fat-arrow { width: 35px; height: 35px; color: #7f1d1d; }
+        
+        .content-scroll { flex: 1; overflow-y: auto; padding-right: 5px; }
+        .content-scroll::-webkit-scrollbar { width: 4px; }
+        .content-scroll::-webkit-scrollbar-thumb { background: #991b1b; border-radius: 10px; }
+
+        .item-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.05); transition: 0.3s; cursor: pointer; }
+        .item-card:hover { transform: translateX(5px); border-color: #991b1b; }
+        
+        .tab-btn.active { background: #991b1b; color: white; border-color: #991b1b; }
+
+        /* Quiz Styles */
+        .quiz-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #f8f6ec url('batik_bg.png?v=2026') center/cover no-repeat !important; 
+            z-index: 5000; display: none; flex-direction: column; padding: 50px 25px 80px 25px; 
+        }
+        .question-box { 
+            flex: 1; 
+            background: linear-gradient(rgba(127, 29, 29, 0.85), rgba(127, 29, 29, 0.85)), url('pattern_bg_maroon.png') center/cover no-repeat; 
+            padding: 25px; border-radius: 40px; backdrop-filter: blur(10px);
+            border: 2px solid rgba(254, 202, 202, 0.4);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4); color: white; display: flex; flex-direction: column;
+        }
+        .option-btn { 
+            width: 100%; padding: 18px 20px; background: rgba(255,255,255,0.1); 
+            border-radius: 18px; margin-bottom: 15px; text-align: left; 
+            border: 1px solid rgba(255,255,255,0.2); font-size: 16px; font-weight: 700; 
+            cursor: pointer; transition: 0.3s; color: white; line-height: 1.4;
+        }
+        .option-btn:hover { background: rgba(254, 202, 202, 0.2); border-color: #fecaca; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="dashboard-wrapper" style="background: #f8f6ec url('batik_bg.png?v=2026') center/cover no-repeat !important; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            <div class="status-bar" style="color: #1a1a1a !important;"><span>9:41</span><div class="status-icons">📶 🔋</div></div>
+
+            <main class="page-content">
+                <div class="back-nav">
+                    <div class="back-circle" onclick="window.location.href='dashboard.html'">
+                        <svg viewBox="0 0 24 24" class="fat-arrow" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </div>
+                    <h2 class="serif" style="font-size: 20px; font-weight: 800; color: #7f1d1d;">Module 2: Pattern Recognition</h2>
+                </div>
+
+                <div class="tab-bar">
+                    <button class="tab-btn active" onclick="showTab('patterns')">Sentence Patterns</button>
+                    <button class="tab-btn" onclick="showTab('morphology')">Word Changes</button>
+                </div>
+
+                <div class="content-scroll" id="patterns-content">
+                    <div class="item-card" onclick="showDetail('Subject-Verb Agreement', 'Help students see the formula. Example: [Subject] + [Like] + [Object]. Use different colors for each part of the sentence to make the pattern pop.')"><h4>Subject-Verb Agreement</h4><p>I like vs She likes. Understanding 3rd person singular \'s\'.</p></div>
+                    <div class="item-card" onclick="showDetail('Dialog Structures', 'Identify standard openings. Hello, Hi, Good Morning. Show students that greetings follow a predictable social pattern.')"><h4>Dialog Structures</h4><p>Common response patterns in simple conversations.</p></div>
+                </div>
+
+                <div class="content-scroll" id="morphology-content" style="display: none;">
+                    <div class="item-card" onclick="showDetail('Singular → Plural', 'Teach the rules of change. Explain singular to plural (cat -> cats) as a recurring pattern. Use matching cards to reinforce this.')"><h4>Singular → Plural</h4><p>Apple to Apples, Box to Boxes. Identifying the plural suffix.</p></div>
+                    <div class="item-card" onclick="showDetail('Greeting Expressions', 'Show how different dialogues share the same core logic. Questions always lead to answers. Help students map this flow.')"><h4>Greeting Expressions</h4><p>Morning, Afternoon, Evening patterns based on time.</p></div>
+                </div>
+
+                <button class="btn-take-quiz" style="background: #991b1b; color: #ffffff;" onclick="startMainQuiz()">TAKE 10-QUESTION QUIZ</button>
+            </main>
+
+            <!-- Detail Modal -->
+            <div id="detail-modal" class="quiz-overlay" style="padding: 100px 40px; justify-content: center; background: rgba(0,0,0,0.85) !important;">
+                <div class="question-box" style="background: white; color: #1a1a1a; min-height: 250px; border: none;">
+                    <h3 id="detail-title" class="serif" style="color: #7f1d1d; margin-bottom: 15px;">Stage Detail</h3>
+                    <p id="detail-text" style="font-size: 15px; line-height: 1.6; color: #4b5563;"></p>
+                    <button class="btn-signin" style="margin-top: auto; background: #7f1d1d; color: white;" onclick="closeDetail()">CLOSE</button>
+                </div>
+            </div>
+
+            <div id="quiz-overlay" class="quiz-overlay">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: #1a1a1a;">
+                    <h3 class="serif" id="quiz-title" style="color: #1a1a1a;">Knowledge Check</h3>
+                    <span id="q-count" style="font-weight: 800; color: #991b1b;">1/10</span>
+                </div>
+                <div class="question-box">
+                    <p id="q-text" style="font-size: 18px; font-weight: 600; color: white; margin-bottom: 25px;"></p>
+                    <div id="options-container"></div>
+                </div>
+            </div>
+
+            <nav class="bottom-nav">
+                <div class="nav-btn btn-home" onclick="window.location.href='dashboard.html'">🏠</div>
+                <div class="nav-btn btn-stats" onclick="window.location.href='analytics.html'">📊</div>
+                <div class="nav-btn btn-trophy" onclick="window.location.href='achievements.html'">🏆</div>
+                <div class="nav-btn btn-profile" onclick="window.location.href='profile.html'">👤</div>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "Which pattern is correct for 3rd person singular in Present Tense?", a: ["She like apples", "She likes apples", "She liking apples", "She liked apples"], correct: 1, clue: "Remember the 3rd person singular 's' rule." },
+            { q: "What is the plural pattern for the word 'Child'?", a: ["Childs", "Childrens", "Children", "Childes"], correct: 2, clue: "This is an irregular plural pattern." },
+            { q: "Identify the pattern: 'I ____ English every day.'", a: ["study", "studies", "studying", "studied"], correct: 0, clue: "Use Simple Present for daily routines." },
+            { q: "Choose the correct greeting pattern for 8:00 PM.", a: ["Good Morning", "Good Afternoon", "Good Evening", "Good Night"], correct: 2, clue: "Evening starts after sunset but before bed." },
+            { q: "Which sentence follows the pattern 'Subject + is + Adjective'?", a: ["He runs fast", "The car is red", "I eat bread", "They are playing"], correct: 1, clue: "Find the sentence that describes a state using 'is'." },
+            { q: "What is the plural pattern for 'Box'?", a: ["Boxs", "Boxen", "Boxes", "Boxies"], correct: 2, clue: "Words ending in 'x' usually add 'es'." },
+            { q: "Which one is a plural noun pattern?", a: ["Teacher", "Student", "People", "Doctor"], correct: 2, clue: "Look for the word that represents more than one person." },
+            { q: "Complete the pattern: 'My mother ____ at the hospital.'", a: ["work", "works", "working", "worker"], correct: 1, clue: "Mother is 3rd person singular (She)." },
+            { q: "In a dialog, if someone says 'How are you?', the pattern response is...", a: ["I am fine, thank you", "I am go to school", "Yes, I am", "Nice to meet you"], correct: 0, clue: "This is a standard social greeting pattern." },
+            { q: "Which word follows the 'Vowel + y' plural pattern (just add s)?", a: ["City", "Boy", "Country", "Baby"], correct: 1, clue: "Look for a vowel before the 'y' (e.g., 'oy')." }
+        ];
+
+        let currentQ = 0;
+        let attempts = 3;
+
+        function showTab(type) {
+            document.getElementById('patterns-content').style.display = type === 'patterns' ? 'block' : 'none';
+            document.getElementById('morphology-content').style.display = type === 'morphology' ? 'block' : 'none';
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function showDetail(title, text) {
+            document.getElementById('detail-title').innerText = title;
+            document.getElementById('detail-text').innerText = text;
+            document.getElementById('detail-modal').style.display = 'flex';
+        }
+
+        function closeDetail() {
+            document.getElementById('detail-modal').style.display = 'none';
+        }
+
+        function startMainQuiz() {
+            document.getElementById('quiz-overlay').style.display = 'flex';
+            currentQ = 0;
+            attempts = 3;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQ];
+            document.getElementById('q-count').innerText = `${currentQ + 1}/10`;
+            document.getElementById('q-text').innerText = q.q;
+            const container = document.getElementById('options-container');
+            container.innerHTML = `
+                <div id="feedback-msg" style="font-size: 14px; font-weight: 800; margin-bottom: 10px; display: none;"></div>
+                <div id="attempt-info" style="font-size: 11px; color: #e2e8f0; margin-bottom: 15px; font-weight: 700;">Attempts: ${attempts}</div>
+                <div id="clue-box" style="display: none; background: #fff; padding: 10px; border-radius: 10px; font-size: 12px; color: #7f1d1d; margin-bottom: 15px; font-style: italic; border: 1px solid #fecaca;">
+                    <strong>💡 Hint:</strong> ${q.clue}
+                </div>
+                <div id="options-list"></div>
+            `;
+            const list = document.getElementById('options-list');
+            q.a.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.id = `opt-${idx}`;
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(idx);
+                list.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(idx) {
+            const q = questions[currentQ];
+            const feedback = document.getElementById('feedback-msg');
+            const attemptInfo = document.getElementById('attempt-info');
+            const clueBox = document.getElementById('clue-box');
+            const clickedBtn = document.getElementById(`opt-${idx}`);
+            feedback.style.display = 'block';
+
+            if (idx === q.correct) {
+                feedback.innerText = "✓ PERFECT PATTERN!";
+                feedback.style.color = "#bef264";
+                clickedBtn.style.background = "rgba(190, 242, 100, 0.3)";
+                clickedBtn.style.borderColor = "#bef264";
+                setTimeout(() => {
+                    if (currentQ < questions.length - 1) {
+                        currentQ++;
+                        attempts = 3;
+                        loadQuestion();
+                    } else {
+                        window.location.href = 'dashboard.html?completed=2'; // Level 2 complete
+                    }
+                }, 1200);
+            } else {
+                attempts--;
+                feedback.innerText = "✗ INCORRECT PATTERN.";
+                feedback.style.color = "#fca5a5";
+                clickedBtn.style.background = "rgba(239, 68, 68, 0.2)";
+                clickedBtn.style.borderColor = "#ef4444";
+                attemptInfo.innerText = `Attempts: ${attempts}`;
+                if (attempts <= 0) {
+                    clueBox.style.display = 'block';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

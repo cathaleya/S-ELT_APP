@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-ELT - Speech Mastery</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Playfair+Display:wght@700;800&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles_final.css">
+    <style>
+        .back-nav { display: flex; align-items: center; gap: 15px; margin: 60px 0 25px 0; position: relative; }
+        .back-circle { 
+            width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; background: transparent;
+        }
+        .fat-arrow { width: 35px; height: 35px; color: #e11d48; }
+        
+        .speech-container {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+        }
+        .sentence-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 20px; border-radius: 30px; margin-bottom: 40px; width: 100%;
+            border: 2px solid #fda4af; box-shadow: 0 15px 35px rgba(225, 29, 72, 0.1);
+        }
+        .sentence-text {
+            font-size: 24px; font-weight: 900; color: #e11d48; line-height: 1.4; margin-bottom: 10px;
+        }
+        .sentence-hint {
+            font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase;
+        }
+
+        .mic-btn-large {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: linear-gradient(135deg, #e11d48, #be123c);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 40px; color: white; border: 8px solid rgba(225, 29, 72, 0.2);
+            box-shadow: 0 15px 30px rgba(225, 29, 72, 0.3);
+            cursor: pointer; transition: 0.3s; position: relative;
+        }
+        .mic-btn-large:active { transform: scale(0.9); }
+        .mic-btn-large.listening {
+            animation: pulse-red 1.5s infinite;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(225, 29, 72, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+        }
+
+        .progression-dots {
+            display: flex; gap: 8px; margin-top: 30px;
+        }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #fda4af; }
+        .dot.active { background: #e11d48; width: 24px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="dashboard-wrapper" style="background: #f8f6ec url('batik_bg.png?v=2026') center/cover no-repeat !important; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            <!-- Status Bar -->
+            <div class="status-bar" style="color: #1a1a1a !important;"><span>9:41</span><div class="status-icons">📶 🔋</div></div>
+
+            <main class="page-content" style="display: flex; flex-direction: column;">
+                <div class="back-nav">
+                    <div class="back-circle" onclick="window.location.href='dashboard.html'">
+                        <svg viewBox="0 0 24 24" class="fat-arrow" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </div>
+                    <h2 class="serif" style="font-size: 20px; font-weight: 800; color: #be123c;">Module 5: Speech Mastery</h2>
+                </div>
+
+                <div class="speech-container">
+                    <div class="sentence-box">
+                        <p id="target-sentence" class="sentence-text">"I have a cute cat with white fur."</p>
+                        <p class="sentence-hint">READ ALOUD CLEARLY</p>
+                    </div>
+
+                    <div id="mic-trigger" class="mic-btn-large" onclick="startListening()">🎤</div>
+                    
+                    <p id="feedback-txt" style="margin-top: 20px; font-weight: 800; color: #e11d48; visibility: hidden;">System Listening...</p>
+
+                    <div class="progression-dots">
+                        <div class="dot active"></div>
+                        <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                        <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 11px; font-weight: 800; color: #64748b;" id="q-counter">Sentence 1 of 10</p>
+                </div>
+            </main>
+
+            <!-- Bottom Nav -->
+            <nav class="bottom-nav">
+                <div class="nav-btn btn-home" onclick="window.location.href='dashboard.html'">🏠</div>
+                <div class="nav-btn btn-stats" onclick="window.location.href='analytics.html'">📊</div>
+                <div class="nav-btn btn-trophy" onclick="window.location.href='achievements.html'">🏆</div>
+                <div class="nav-btn btn-profile" onclick="window.location.href='profile.html'">👤</div>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        const sentences = [
+            "I have a cute cat with white fur.",
+            "The teacher shows a picture of an elephant.",
+            "She likes to play football in the park.",
+            "My mother works at the public hospital.",
+            "First, I listen to the teacher speaking.",
+            "The big school building is very clean.",
+            "We match the pictures with correct names.",
+            "Finally, I present my work to the class.",
+            "There are many students in the classroom.",
+            "Practice makes perfect in learning English."
+        ];
+
+        let currentIdx = 0;
+
+        function startListening() {
+            const btn = document.getElementById('mic-trigger');
+            const feedback = document.getElementById('feedback-txt');
+            
+            btn.classList.add('listening');
+            feedback.style.visibility = 'visible';
+            feedback.style.color = '#e11d48';
+            feedback.innerText = "System Listening... (Speak now)";
+
+            // Stage 1: Listening (3 seconds)
+            setTimeout(() => {
+                feedback.innerText = "Processing Voice... Analyzing...";
+                
+                // Stage 2: Processing (2 seconds more)
+                setTimeout(() => {
+                    btn.classList.remove('listening');
+                    feedback.innerText = "✓ EXCELLENT PRONUNCIATION!";
+                    feedback.style.color = "#059669";
+                    
+                    setTimeout(() => {
+                        nextSentence();
+                    }, 1500);
+                }, 2000);
+            }, 3000);
+        }
+
+        function nextSentence() {
+            if (currentIdx < sentences.length - 1) {
+                currentIdx++;
+                document.getElementById('target-sentence').innerText = `"${sentences[currentIdx]}"`;
+                document.getElementById('q-counter').innerText = `Sentence ${currentIdx + 1} of 10`;
+                document.getElementById('feedback-txt').style.visibility = 'hidden';
+                document.getElementById('feedback-txt').style.color = '#e11d48';
+                
+                // Update dots
+                const dots = document.querySelectorAll('.dot');
+                dots.forEach((d, i) => {
+                    d.classList.remove('active');
+                    if (i === currentIdx) d.classList.add('active');
+                });
+            } else {
+                window.location.href = 'dashboard.html?completed=5';
+            }
+        }
+    </script>
+</body>
+</html>

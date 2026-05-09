@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-ELT - Login</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Grand+Hotel&family=Luckiest+Guy&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles_final.css">
+</head>
+<body>
+    <div class="app-container" style="background: none !important;">
+        <!-- Clean Background: NO baked-in text or icons -->
+        <main class="login-page" style="background: url('login_bg_clean.png') center/cover no-repeat !important; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            
+            <!-- Real Status Bar (Only One) -->
+            <div class="status-bar" style="color: white !important;">
+                <span>9:41</span>
+                <div class="status-icons">📶 🔋</div>
+            </div>
+
+            <div class="login-content" style="text-align: center; width: 100%;">
+                <div class="logo-box">
+                    <img src="logo.png" alt="S-ELT Logo">
+                </div>
+                <h1 class="logo-text">S-ELT</h1>
+                <p class="tagline">Smart English Platform</p>
+                
+                <div class="login-card">
+                    <input type="text" placeholder="Academic Email" id="email">
+                    <input type="password" placeholder="Password" id="password">
+                    <button class="btn-signin" onclick="handleLogin()">Sign In</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        function handleLogin() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            if (email && pass) {
+                window.location.href = 'dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>

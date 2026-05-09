@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-ELT - Algorithmic Thinking</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Playfair+Display:wght@700;800&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles_final.css">
+    <style>
+        .back-nav { display: flex; align-items: center; gap: 15px; margin: 60px 0 25px 0; position: relative; }
+        .back-circle { 
+            width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; background: transparent;
+        }
+        .back-circle:hover { transform: translateX(-5px) scale(1.1); }
+        .fat-arrow { width: 35px; height: 35px; color: #1e3a8a; }
+        
+        .content-scroll { flex: 1; overflow-y: auto; padding-right: 5px; }
+        .content-scroll::-webkit-scrollbar { width: 4px; }
+        .content-scroll::-webkit-scrollbar-thumb { background: #1d4ed8; border-radius: 10px; }
+
+        .item-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.05); transition: 0.3s; cursor: pointer; }
+        .item-card:hover { transform: translateX(5px); border-color: #1d4ed8; }
+        
+        .tab-btn.active { background: #1d4ed8; color: white; border-color: #1d4ed8; }
+
+        /* Quiz Styles */
+        .quiz-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #f8f6ec url('batik_bg.png?v=2026') center/cover no-repeat !important; 
+            z-index: 5000; display: none; flex-direction: column; padding: 50px 25px 80px 25px; 
+        }
+        .question-box { 
+            flex: 1; 
+            background: linear-gradient(rgba(30, 58, 138, 0.85), rgba(30, 58, 138, 0.85)), url('algorithm_bg_blue.png') center/cover no-repeat; 
+            padding: 25px; border-radius: 40px; backdrop-filter: blur(10px);
+            border: 2px solid rgba(147, 197, 253, 0.4);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4); color: white; display: flex; flex-direction: column;
+        }
+        .option-btn { 
+            width: 100%; padding: 18px 20px; background: rgba(255,255,255,0.1); 
+            border-radius: 18px; margin-bottom: 15px; text-align: left; 
+            border: 1px solid rgba(255,255,255,0.2); font-size: 16px; font-weight: 700; 
+            cursor: pointer; transition: 0.3s; color: white; line-height: 1.4;
+        }
+        .option-btn:hover { background: rgba(147, 197, 253, 0.25); border-color: #93c5fd; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="dashboard-wrapper" style="background: #f8f6ec url('batik_bg.png?v=2026') center/cover no-repeat !important; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            <div class="status-bar" style="color: #1a1a1a !important;"><span>9:41</span><div class="status-icons">📶 🔋</div></div>
+
+            <main class="page-content">
+                <div class="back-nav">
+                    <div class="back-circle" onclick="window.location.href='dashboard.html'">
+                        <svg viewBox="0 0 24 24" class="fat-arrow" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </div>
+                    <h2 class="serif" style="font-size: 20px; font-weight: 800; color: #1e3a8a;">Module 4: Algorithmic Thinking</h2>
+                </div>
+
+                <div class="tab-bar">
+                    <button class="tab-btn active" onclick="showTab('sequence')">Teaching Sequence</button>
+                    <button class="tab-btn" onclick="showTab('procedures')">Procedures</button>
+                </div>
+
+                <div class="content-scroll" id="sequence-content">
+                    <div class="item-card" onclick="showDetail('Step-by-Step Flow', 'A logical sequence for primary students: 1. Listen (Input), 2. Repeat (Modeling), 3. Match (Recognition), 4. Practice (Guided), 5. Create (Independent), 6. Present (Production).')"><h4>Step-by-Step Flow</h4><p>1. Listen → 2. Repeat → 3. Match → 4. Practice → 5. Create → 6. Present.</p></div>
+                    <div class="item-card" onclick="showDetail('Logical Progression', 'Instruction must move from passive reception to active production. This ensures students build confidence before they are asked to speak independently.')"><h4>Logical Progression</h4><p>Building complexity from receptive skills to productive skills.</p></div>
+                </div>
+
+                <div class="content-scroll" id="procedures-content" style="display: none;">
+                    <div class="item-card" onclick="showDetail('Clear Instructions', 'Use simple imperatives: \"Point to...\", \"Say after me...\", \"Draw a...\". Avoid complex sentences that distract from the English lesson.')"><h4>Clear Instructions</h4><p>Using \'First\', \'Next\', \'Then\', and \'Finally\' for task clarity.</p></div>
+                    <div class="item-card" onclick="showDetail('Activity Urutan', 'A structured lesson algorithm prevents chaos in the classroom. Each activity should have a clear start and end point.')"><h4>Activity Urutan</h4><p>Designing the lesson timeline systematically.</p></div>
+                </div>
+
+                <button class="btn-take-quiz" style="background: #1e3a8a; color: #fde047;" onclick="startMainQuiz()">TAKE 10-QUESTION QUIZ</button>
+            </main>
+
+            <!-- Detail Modal -->
+            <div id="detail-modal" class="quiz-overlay" style="padding: 100px 40px; justify-content: center; background: rgba(0,0,0,0.85) !important;">
+                <div class="question-box" style="background: white; color: #1a1a1a; min-height: 250px; border: none;">
+                    <h3 id="detail-title" class="serif" style="color: #1e3a8a; margin-bottom: 15px;">Stage Detail</h3>
+                    <p id="detail-text" style="font-size: 15px; line-height: 1.6; color: #4b5563;"></p>
+                    <button class="btn-signin" style="margin-top: auto; background: #1e3a8a;" onclick="closeDetail()">CLOSE</button>
+                </div>
+            </div>
+
+            <div id="quiz-overlay" class="quiz-overlay">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: #1a1a1a;">
+                    <h3 class="serif" id="quiz-title" style="color: #1a1a1a;">Knowledge Check</h3>
+                    <span id="q-count" style="font-weight: 800; color: #1e3a8a;">1/10</span>
+                </div>
+                <div class="question-box">
+                    <p id="q-text" style="font-size: 18px; font-weight: 800; color: white; margin-bottom: 25px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></p>
+                    <div id="options-container"></div>
+                </div>
+            </div>
+
+            <nav class="bottom-nav">
+                <div class="nav-btn btn-home" onclick="window.location.href='dashboard.html'">🏠</div>
+                <div class="nav-btn btn-stats" onclick="window.location.href='analytics.html'">📊</div>
+                <div class="nav-btn btn-trophy">🏆</div>
+                <div class="nav-btn btn-profile">👤</div>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "What is the correct sequence for starting a language lesson?", a: ["1. Present, 2. Listen", "1. Listen, 2. Repeat", "1. Create, 2. Match", "1. Match, 2. Repeat"], correct: 1, clue: "Receptive skills (listening) always come before productive skills (speaking)." },
+            { q: "Why is Algorithmic Thinking important in teaching?", a: ["To make students confused", "To ensure logical and systematic flow", "To skip the opening", "To avoid homework"], correct: 1, clue: "Algorithms are about step-by-step logic." },
+            { q: "Which step comes after 'Practice Dialogue' in the standard 6-step flow?", a: ["Listen", "Repeat", "Create simple sentences", "Opening"], correct: 2, clue: "After practicing, students move to creating their own work." },
+            { q: "Which word is a sequencing keyword for procedures?", a: ["Apple", "Quickly", "Finally", "Happy"], correct: 2, clue: "Keywords like First, Next, and Finally help show order." },
+            { q: "The final step 'Present in front of class' represents...", a: ["Receptive mastery", "Productive mastery", "Modeling stage", "Initial opening"], correct: 1, clue: "Presenting is the peak of productive language skill." },
+            { q: "In an algorithm for 'Matching Pictures', what should happen first?", a: ["Students draw a picture", "Teacher shows the pictures", "Students get an exam", "Class is over"], correct: 1, clue: "Students need to see the model before matching." },
+            { q: "Logical progression in ELT means...", a: ["Easy to Difficult", "Difficult to Easy", "Random order", "Teacher only talks"], correct: 0, clue: "Always start with the simple basics first." },
+            { q: "What is the 3rd step in the 6-step ELT algorithm?", a: ["Listen", "Match pictures", "Present", "Create sentences"], correct: 1, clue: "Sequence: Listen, Repeat, [___], Practice..." },
+            { q: "Clear instructions help students...", a: ["Follow the process with ease", "Forget the lesson", "Sleep in class", "Argue with peers"], correct: 0, clue: "Clarity leads to better following of steps." },
+            { q: "Creating a 'Procedure' for a game involves...", a: ["Logical steps", "Random guesses", "Silent reading", "Grammar analysis"], correct: 0, clue: "Games need clear rules and steps to work." }
+        ];
+
+        let currentQ = 0;
+        let attempts = 3;
+
+        function showTab(type) {
+            document.getElementById('sequence-content').style.display = type === 'sequence' ? 'block' : 'none';
+            document.getElementById('procedures-content').style.display = type === 'procedures' ? 'block' : 'none';
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function showDetail(title, text) {
+            document.getElementById('detail-title').innerText = title;
+            document.getElementById('detail-text').innerText = text;
+            document.getElementById('detail-modal').style.display = 'flex';
+        }
+
+        function closeDetail() {
+            document.getElementById('detail-modal').style.display = 'none';
+        }
+
+        function startMainQuiz() {
+            document.getElementById('quiz-overlay').style.display = 'flex';
+            currentQ = 0;
+            attempts = 3;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQ];
+            document.getElementById('q-count').innerText = `${currentQ + 1}/10`;
+            document.getElementById('q-text').innerText = q.q;
+            const container = document.getElementById('options-container');
+            container.innerHTML = `
+                <div id="feedback-msg" style="font-size: 14px; font-weight: 800; margin-bottom: 10px; display: none;"></div>
+                <div id="attempt-info" style="font-size: 12px; color: #fde047; margin-bottom: 15px; font-weight: 800;">Attempts: ${attempts}</div>
+                <div id="clue-box" style="display: none; background: #fff; padding: 10px; border-radius: 10px; font-size: 12px; color: #1e3a8a; margin-bottom: 15px; font-style: italic; border: 1px solid #93c5fd;">
+                    <strong>💡 Hint:</strong> ${q.clue}
+                </div>
+                <div id="options-list"></div>
+            `;
+            const list = document.getElementById('options-list');
+            q.a.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.id = `opt-${idx}`;
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(idx);
+                list.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(idx) {
+            const q = questions[currentQ];
+            const feedback = document.getElementById('feedback-msg');
+            const attemptInfo = document.getElementById('attempt-info');
+            const clueBox = document.getElementById('clue-box');
+            const clickedBtn = document.getElementById(`opt-${idx}`);
+            feedback.style.display = 'block';
+
+            if (idx === q.correct) {
+                feedback.innerText = "✓ SYSTEMATIC THINKER!";
+                feedback.style.color = "#bef264";
+                clickedBtn.style.background = "rgba(190, 242, 100, 0.3)";
+                clickedBtn.style.borderColor = "#bef264";
+                setTimeout(() => {
+                    if (currentQ < questions.length - 1) {
+                        currentQ++;
+                        attempts = 3;
+                        loadQuestion();
+                    } else {
+                        window.location.href = 'dashboard.html?completed=4'; // Level 4 complete
+                    }
+                }, 1200);
+            } else {
+                attempts--;
+                feedback.innerText = "✗ ILLOGICAL STEP. Re-think!";
+                feedback.style.color = "#fca5a5";
+                clickedBtn.style.background = "rgba(239, 68, 68, 0.2)";
+                clickedBtn.style.borderColor = "#ef4444";
+                attemptInfo.innerText = `Attempts: ${attempts}`;
+                if (attempts <= 0) {
+                    clueBox.style.display = 'block';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-ELT - Abstraction</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Playfair+Display:wght@700;800&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles_final.css">
+    <style>
+        .back-nav { display: flex; align-items: center; gap: 15px; margin: 60px 0 25px 0; position: relative; }
+        .back-circle { 
+            width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; background: transparent;
+        }
+        .back-circle:hover { transform: translateX(-5px) scale(1.1); }
+        .fat-arrow { width: 35px; height: 35px; color: #92400e; }
+        
+        .content-scroll { flex: 1; overflow-y: auto; padding-right: 5px; }
+        .content-scroll::-webkit-scrollbar { width: 4px; }
+        .content-scroll::-webkit-scrollbar-thumb { background: #d97706; border-radius: 10px; }
+
+        .item-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid rgba(0,0,0,0.05); transition: 0.3s; cursor: pointer; }
+        .item-card:hover { transform: translateX(5px); border-color: #d97706; }
+        
+        .tab-btn.active { background: #d97706; color: white; border-color: #d97706; }
+
+        /* Quiz Styles */
+        .quiz-overlay { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #f8f6ec url('batik_bg.png?v=2026') center/cover no-repeat !important; 
+            z-index: 5000; display: none; flex-direction: column; padding: 50px 25px 80px 25px; 
+        }
+        .question-box { 
+            flex: 1; 
+            background: linear-gradient(rgba(120, 53, 15, 0.85), rgba(120, 53, 15, 0.85)), url('abstraction_bg_amber.png') center/cover no-repeat; 
+            padding: 25px; border-radius: 40px; backdrop-filter: blur(10px);
+            border: 2px solid rgba(251, 191, 36, 0.4);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4); color: white; display: flex; flex-direction: column;
+        }
+        .option-btn { 
+            width: 100%; padding: 18px 20px; background: rgba(255,255,255,0.1); 
+            border-radius: 18px; margin-bottom: 15px; text-align: left; 
+            border: 1px solid rgba(255,255,255,0.2); font-size: 16px; font-weight: 700; 
+            cursor: pointer; transition: 0.3s; color: white; line-height: 1.4;
+        }
+        .option-btn:hover { background: rgba(251, 191, 36, 0.25); border-color: #fbbf24; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="dashboard-wrapper" style="background: #f8f6ec url('batik_bg.png?v=2026') center/cover no-repeat !important; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            <div class="status-bar" style="color: #1a1a1a !important;"><span>9:41</span><div class="status-icons">📶 🔋</div></div>
+
+            <main class="page-content">
+                <div class="back-nav">
+                    <div class="back-circle" onclick="window.location.href='dashboard.html'">
+                        <svg viewBox="0 0 24 24" class="fat-arrow" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </div>
+                    <h2 class="serif" style="font-size: 20px; font-weight: 800; color: #92400e;">Module 3: Abstraction</h2>
+                </div>
+
+                <div class="tab-bar">
+                    <button class="tab-btn active" onclick="showTab('simplification')">Simplification</button>
+                    <button class="tab-btn" onclick="showTab('visuals')">Visual Aids</button>
+                </div>
+
+                <div class="content-scroll" id="simplification-content">
+                    <div class="item-card" onclick="showDetail('Grammar Shortcuts', 'Instead of complex theory, use simple formulas: <b>Subject + Verb 1</b>. Keep it as a memorable shortcut for young students.')"><h4>Grammar Shortcuts</h4><p>Instead of theory, use: <b>Subject + Verb 1</b>. Keep it simple for SD.</p></div>
+                    <div class="item-card" onclick="showDetail('Functional Usage', 'Focus on the *action* students need to perform. Use real-world context like \"How to ask for a drink\" instead of \"Interrogative sentences\".')"><h4>Functional Usage</h4><p>Focus on \'How to use\' rather than complex linguistic terms.</p></div>
+                </div>
+
+                <div class="content-scroll" id="visuals-content" style="display: none;">
+                    <div class="item-card" onclick="showDetail('Symbols & Colors', 'Use visual logic: Red for mistakes, Green for correct. Symbols like ➔ or 🚫 help students understand abstract rules without long explanations.')"><h4>Symbols & Colors</h4><p>Using red for \'No\' and green for \'Yes\' in grammar rules.</p></div>
+                    <div class="item-card" onclick="showDetail('Keyword Focus', 'Abstract the essence. Train students to look for the most important nouns and verbs in a paragraph to understand the core message.')"><h4>Keyword Focus</h4><p>Extracting only the most important words from a text.</p></div>
+                </div>
+
+                <button class="btn-take-quiz" style="background: #d97706; color: #ffffff;" onclick="startMainQuiz()">TAKE 10-QUESTION QUIZ</button>
+            </main>
+
+            <!-- Detail Modal -->
+            <div id="detail-modal" class="quiz-overlay" style="padding: 100px 40px; justify-content: center; background: rgba(0,0,0,0.85) !important;">
+                <div class="question-box" style="background: white; color: #1a1a1a; min-height: 250px; border: none;">
+                    <h3 id="detail-title" class="serif" style="color: #92400e; margin-bottom: 15px;">Stage Detail</h3>
+                    <p id="detail-text" style="font-size: 15px; line-height: 1.6; color: #4b5563;"></p>
+                    <button class="btn-signin" style="margin-top: auto; background: #92400e; color: white;" onclick="closeDetail()">CLOSE</button>
+                </div>
+            </div>
+
+            <div id="quiz-overlay" class="quiz-overlay">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: #1a1a1a;">
+                    <h3 class="serif" id="quiz-title" style="color: #1a1a1a;">Knowledge Check</h3>
+                    <span id="q-count" style="font-weight: 800; color: #92400e;">1/10</span>
+                </div>
+                <div class="question-box">
+                    <p id="q-text" style="font-size: 18px; font-weight: 600; color: white; margin-bottom: 25px;"></p>
+                    <div id="options-container"></div>
+                </div>
+            </div>
+
+            <nav class="bottom-nav">
+                <div class="nav-btn btn-home" onclick="window.location.href='dashboard.html'">🏠</div>
+                <div class="nav-btn btn-stats" onclick="window.location.href='analytics.html'">📊</div>
+                <div class="nav-btn btn-trophy" onclick="window.location.href='achievements.html'">🏆</div>
+                <div class="nav-btn btn-profile" onclick="window.location.href='profile.html'">👤</div>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "What is the primary goal of Abstraction for PGSD students?", a: ["Memorize complex grammar", "Simplify information for SD students", "Learn 5000 new words", "Analyze academic journals"], correct: 1, clue: "Think about how primary schoolers understand simple concepts." },
+            { q: "Instead of explaining 'Simple Present Tense' theory, you should use...", a: ["A 5-page article", "The formula: Subject + Verb 1", "A history of English", "No explanation at all"], correct: 1, clue: "Give them a simple shortcut to remember." },
+            { q: "Which tool is best for abstracting grammar rules visually?", a: ["Symbols & Colors", "Long dictionaries", "Black and white text", "Empty notebooks"], correct: 0, clue: "Visual aids like Red/Green help students identify patterns quickly." },
+            { q: "Abstraction focuses on...", a: ["Complex linguistic terms", "Language function", "Spelling every word", "Printing more books"], correct: 1, clue: "It's about HOW the language is used, not what the terms are." },
+            { q: "Which one is an example of a keyword-focused abstraction?", a: ["Copying the whole book", "Highlighting 'I like' in a text", "Writing a new story", "Reading the text twice"], correct: 1, clue: "Pick out the most important part of the information." },
+            { q: "In PGSD, simplification means...", a: ["Making the material harder", "Reducing core complexity", "Using advanced vocabulary", "Ignoring the syllabus"], correct: 1, clue: "The goal is to make it easy for elementary students." },
+            { q: "When teaching 'Greetings', a simplified approach focuses on...", a: ["History of the word 'Hello'", "Time-based keywords", "Etymology of morning", "Phonetic symbols"], correct: 1, clue: "Morning, Afternoon, and Evening are the key keywords." },
+            { q: "A 'shortcut formula' in abstraction is used to...", a: ["Confuse students", "Accelerate understanding", "Replace the teacher", "Make the class longer"], correct: 1, clue: "Formulas help students apply the rule immediately." },
+            { q: "Abstraction involves removing...", a: ["Important facts", "Unnecessary complexity", "All the images", "The student's name"], correct: 1, clue: "Keep the essence, remove the clutter." },
+            { q: "Using a 'Red Cross' symbol for incorrect grammar is an example of...", a: ["Decomposition", "Abstraction", "Decomposition", "Algorithmic Thinking"], correct: 1, clue: "Using a symbol to represent a complex rule (Wrong)." }
+        ];
+
+        let currentQ = 0;
+        let attempts = 3;
+
+        function showTab(type) {
+            document.getElementById('simplification-content').style.display = type === 'simplification' ? 'block' : 'none';
+            document.getElementById('visuals-content').style.display = type === 'visuals' ? 'block' : 'none';
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function showDetail(title, text) {
+            document.getElementById('detail-title').innerText = title;
+            document.getElementById('detail-text').innerText = text;
+            document.getElementById('detail-modal').style.display = 'flex';
+        }
+
+        function closeDetail() {
+            document.getElementById('detail-modal').style.display = 'none';
+        }
+
+        function startMainQuiz() {
+            document.getElementById('quiz-overlay').style.display = 'flex';
+            currentQ = 0;
+            attempts = 3;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQ];
+            document.getElementById('q-count').innerText = `${currentQ + 1}/10`;
+            document.getElementById('q-text').innerText = q.q;
+            const container = document.getElementById('options-container');
+            container.innerHTML = `
+                <div id="feedback-msg" style="font-size: 14px; font-weight: 800; margin-bottom: 10px; display: none;"></div>
+                <div id="attempt-info" style="font-size: 11px; color: #e2e8f0; margin-bottom: 15px; font-weight: 700;">Attempts: ${attempts}</div>
+                <div id="clue-box" style="display: none; background: #fff; padding: 10px; border-radius: 10px; font-size: 12px; color: #92400e; margin-bottom: 15px; font-style: italic; border: 1px solid #fcd34d;">
+                    <strong>💡 Hint:</strong> ${q.clue}
+                </div>
+                <div id="options-list"></div>
+            `;
+            const list = document.getElementById('options-list');
+            q.a.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.id = `opt-${idx}`;
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(idx);
+                list.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(idx) {
+            const q = questions[currentQ];
+            const feedback = document.getElementById('feedback-msg');
+            const attemptInfo = document.getElementById('attempt-info');
+            const clueBox = document.getElementById('clue-box');
+            const clickedBtn = document.getElementById(`opt-${idx}`);
+            feedback.style.display = 'block';
+
+            if (idx === q.correct) {
+                feedback.innerText = "✓ BRILLIANT ABSTRACTION!";
+                feedback.style.color = "#bef264";
+                clickedBtn.style.background = "rgba(190, 242, 100, 0.3)";
+                clickedBtn.style.borderColor = "#bef264";
+                setTimeout(() => {
+                    if (currentQ < questions.length - 1) {
+                        currentQ++;
+                        attempts = 3;
+                        loadQuestion();
+                    } else {
+                        window.location.href = 'dashboard.html?completed=3'; // Level 3 complete
+                    }
+                }, 1200);
+            } else {
+                attempts--;
+                feedback.innerText = "✗ TOO COMPLEX. Simplify!";
+                feedback.style.color = "#fca5a5";
+                clickedBtn.style.background = "rgba(239, 68, 68, 0.2)";
+                clickedBtn.style.borderColor = "#ef4444";
+                attemptInfo.innerText = `Attempts: ${attempts}`;
+                if (attempts <= 0) {
+                    clueBox.style.display = 'block';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

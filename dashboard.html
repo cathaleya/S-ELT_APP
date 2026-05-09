@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-ELT - Dashboard</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Playfair+Display:wght@700;800&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles_final.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="dashboard-wrapper" style="background: #f8f6ec url('batik_bg.png?v=2026') center/cover no-repeat !important; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+
+            <main class="page-content">
+                <header class="profile-header">
+                    <div class="profile-info">
+                        <p class="welcome-text">WELCOME BACK,</p>
+                        <h2 class="user-name script" id="display-name">Anisa Rahma</h2>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="user-role">MAHASISWA PGSD</span>
+                            <span class="logout-btn" onclick="window.location.href='login.html'" style="font-size: 9px; color: #e11d48; font-weight: 900; cursor: pointer; text-decoration: underline; text-transform: uppercase;">Log Out</span>
+                        </div>
+                    </div>
+                    <div class="avatar-box" onclick="window.location.href='profile.html'">
+                        <img id="display-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Anisa" alt="Avatar">
+                    </div>
+                </header>
+
+                <section class="stats-grid">
+                    <div class="stat-card green" onclick="window.location.href='analytics.html'">
+                        <span class="label">CT Mastery</span>
+                        <span class="value">94.2%</span>
+                    </div>
+                    <div class="stat-card blue" onclick="window.location.href='analytics.html'">
+                        <span class="label">Proficiency</span>
+                        <span class="value">C1+</span>
+                    </div>
+                </section>
+
+                <div class="modules-section-wrapper">
+                    <div class="section-header" style="color: white !important;">
+                        <h3 class="serif" style="color: white !important;">S-ELT Modules</h3>
+                        <span class="see-all" style="color: rgba(255,255,255,0.7) !important;">See All</span>
+                    </div>
+                    
+                    <div class="module-list">
+                        <!-- Decomposition (Unlocked) -->
+                        <div class="module-card blue" onclick="window.location.href='decomposition.html'">
+                            <div class="module-icon">🧩</div>
+                            <div class="module-info">
+                                <h4 class="serif">Decomposition</h4>
+                                <p>Level 1: Active</p>
+                            </div>
+                            <div class="chevron">➔</div>
+                        </div>
+
+                        <!-- Pattern Recognition (Locked) -->
+                        <div class="module-card purple locked" id="mod-2">
+                            <div class="module-icon">🔒</div>
+                            <div class="module-info">
+                                <h4 class="serif">Pattern Recognition</h4>
+                                <p>Locked - Finish Lvl 1</p>
+                            </div>
+                        </div>
+
+                        <!-- Abstraction (Locked) -->
+                        <div class="module-card orange locked" id="mod-3">
+                            <div class="module-icon">🔒</div>
+                            <div class="module-info">
+                                <h4 class="serif">Abstraction</h4>
+                                <p>Locked</p>
+                            </div>
+                        </div>
+
+                        <!-- Algorithmic Thinking (Locked) -->
+                        <div class="module-card emerald locked" id="mod-4">
+                            <div class="module-icon">🔒</div>
+                            <div class="module-info">
+                                <h4 class="serif">Algorithmic Thinking</h4>
+                                <p>Locked</p>
+                            </div>
+                        </div>
+
+                        <!-- Speech Mastery (Locked) -->
+                        <div class="module-card rose locked" id="mod-5">
+                            <div class="module-icon">🔒</div>
+                            <div class="module-info">
+                                <h4 class="serif">Speech Mastery</h4>
+                                <p>Locked</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Star Animation Overlay -->
+            <div id="feedback-overlay" class="feedback-overlay">
+                <div class="star-container">
+                    <div class="star">⭐</div>
+                    <div class="star">⭐</div>
+                    <div class="star">⭐</div>
+                </div>
+                <h2 class="serif">EXCELLENT!</h2>
+                <p>Module 1 Complete. Level 2 Unlocked!</p>
+                <button class="btn-signin" onclick="closeFeedback()" style="width: auto; padding: 15px 40px; margin-top: 20px;">CONTINUE</button>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <div class="nav-btn btn-home active" onclick="window.location.href='dashboard.html'">🏠</div>
+                <div class="nav-btn btn-stats" onclick="window.location.href='analytics.html'">📊</div>
+                <div class="nav-btn btn-trophy" onclick="window.location.href='achievements.html'">🏆</div>
+                <div class="nav-btn btn-profile" onclick="window.location.href='profile.html'">👤</div>
+            </nav>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        window.onload = () => {
+            const savedName = localStorage.getItem('selt_user_name');
+            const savedAvatar = localStorage.getItem('selt_user_avatar');
+
+            if (savedName) document.getElementById('display-name').innerText = savedName;
+            if (savedAvatar) document.getElementById('display-avatar').src = savedAvatar;
+            const urlParams = new URLSearchParams(window.location.search);
+            const comp = urlParams.get('completed');
+            const overlay = document.getElementById('feedback-overlay');
+            const title = overlay.querySelector('h2');
+            const desc = overlay.querySelector('p');
+
+            if (comp === '1') {
+                overlay.style.display = 'flex';
+                title.innerText = "EXCELLENT!";
+                desc.innerText = "Module 1 Complete. Level 2 Unlocked!";
+                localStorage.setItem('last_comp', 1);
+            } else if (comp === '2') {
+                overlay.style.display = 'flex';
+                title.innerText = "BRILIANT!";
+                desc.innerText = "Module 2 Complete. Level 3 Unlocked!";
+                localStorage.setItem('last_comp', 2);
+            } else if (comp === '3') {
+                overlay.style.display = 'flex';
+                title.innerText = "IMPRESSIVE!";
+                desc.innerText = "Module 3 Complete. Level 4 Unlocked!";
+                localStorage.setItem('last_comp', 3);
+            } else if (comp === '4') {
+                overlay.style.display = 'flex';
+                title.innerText = "OUTSTANDING!";
+                desc.innerText = "Module 4 Complete. Final Level Unlocked!";
+                localStorage.setItem('last_comp', 4);
+            } else if (comp === '5') {
+                overlay.style.display = 'flex';
+                title.innerText = "MASTER COMPLETED!";
+                desc.innerText = "Congratulations! You are now a Speech Expert.";
+                localStorage.setItem('last_comp', 5);
+            }
+
+            // Persistence
+            const currentLevel = parseInt(localStorage.getItem('selt_level')) || 1;
+            for (let i = 2; i <= currentLevel; i++) {
+                unlockModule(i);
+            }
+        };
+
+        function closeFeedback() {
+            document.getElementById('feedback-overlay').style.display = 'none';
+            const lastComp = parseInt(localStorage.getItem('last_comp'));
+            const nextLevel = lastComp + 1;
+            localStorage.setItem('selt_level', nextLevel);
+            unlockModule(nextLevel);
+        }
+
+        function unlockModule(num) {
+            const mod = document.getElementById(`mod-${num}`);
+            if (!mod) return;
+            mod.classList.remove('locked');
+            
+            if (num === 2) {
+                mod.innerHTML = `
+                    <div class="module-icon">🔍</div>
+                    <div class="module-info">
+                        <h4 class="serif">Pattern Recognition</h4>
+                        <p>Level 2: Active</p>
+                    </div>
+                    <div class="chevron">➔</div>
+                `;
+                mod.onclick = () => window.location.href = 'pattern.html';
+            } else if (num === 3) {
+                mod.innerHTML = `
+                    <div class="module-icon">💎</div>
+                    <div class="module-info">
+                        <h4 class="serif">Abstraction</h4>
+                        <p>Level 3: Active</p>
+                    </div>
+                    <div class="chevron">➔</div>
+                `;
+                mod.onclick = () => window.location.href = 'abstraction.html';
+            } else if (num === 4) {
+                mod.innerHTML = `
+                    <div class="module-icon">⚡</div>
+                    <div class="module-info">
+                        <h4 class="serif">Algorithmic Thinking</h4>
+                        <p>Level 4: Active</p>
+                    </div>
+                    <div class="chevron">➔</div>
+                `;
+                mod.onclick = () => window.location.href = 'algorithm.html';
+            } else if (num === 5) {
+                mod.innerHTML = `
+                    <div class="module-icon">🎤</div>
+                    <div class="module-info">
+                        <h4 class="serif">Speech Mastery</h4>
+                        <p>Level 5: Active</p>
+                    </div>
+                    <div class="chevron">➔</div>
+                `;
+                mod.onclick = () => window.location.href = 'speech.html';
+            }
+        }
+    </script>
+</body>
+</html>

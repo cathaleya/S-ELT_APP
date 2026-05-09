@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-ELT - User Profile</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Playfair+Display:wght@700;800&family=Satisfy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles_final.css">
+    <style>
+        .profile-container {
+            display: flex; flex-direction: column; align-items: center; padding-top: 60px;
+        }
+        .avatar-wrapper {
+            position: relative; width: 120px; height: 120px; margin-bottom: 25px;
+        }
+        .profile-avatar {
+            width: 100%; height: 100%; border-radius: 50%; border: 4px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); object-fit: cover; background: #e2e8f0;
+        }
+        .edit-badge {
+            position: absolute; bottom: 5px; right: 5px; background: #064e3b;
+            color: white; width: 32px; height: 32px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            border: 3px solid white; cursor: pointer; font-size: 14px;
+        }
+        .input-group {
+            width: 100%; background: white; border-radius: 20px; padding: 15px 20px;
+            margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.03);
+        }
+        .input-group label {
+            display: block; font-size: 10px; font-weight: 800; color: #6b7280;
+            text-transform: uppercase; margin-bottom: 5px;
+        }
+        .input-group input {
+            width: 100%; border: none; font-size: 16px; font-weight: 600;
+            color: #1a1a1a; outline: none; background: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="dashboard-wrapper" style="background: #f8f6ec url('batik_bg.png?v=2026') center/cover no-repeat !important; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            <!-- Status Bar -->
+            <div class="status-bar" style="color: #1a1a1a !important;"><span>9:41</span><div class="status-icons">📶 🔋</div></div>
+
+            <main class="page-content">
+                <div class="profile-container">
+                    <div class="avatar-wrapper">
+                        <img id="avatar-preview" src="https://ui-avatars.com/api/?name=Anisa+Rahma&background=064e3b&color=fff&size=128" class="profile-avatar" alt="User Avatar">
+                        <label for="avatar-input" class="edit-badge">✏️</label>
+                        <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <h2 class="serif" style="color: #064e3b; font-weight: 800; font-size: 24px; margin-bottom: 30px;">Account Settings</h2>
+
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" id="user-fullname" value="Anisa Rahma">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="user-email" value="anisa.rahma@student.id">
+                    </div>
+
+                    <div class="input-group">
+                        <label>University / School</label>
+                        <input type="text" value="PGSD Faculty">
+                    </div>
+
+                    <button class="btn-signin" style="margin-top: 20px; background: #064e3b;" onclick="saveProfile()">SAVE CHANGES</button>
+                    
+                    <p id="save-msg" style="margin-top: 15px; font-size: 12px; font-weight: 700; color: #059669; display: none;">✓ Profile updated successfully!</p>
+                </div>
+            </main>
+
+            <!-- Bottom Nav -->
+            <nav class="bottom-nav">
+                <div class="nav-btn btn-home" onclick="window.location.href='dashboard.html'">🏠</div>
+                <div class="nav-btn btn-stats" onclick="window.location.href='analytics.html'">📊</div>
+                <div class="nav-btn btn-trophy" onclick="window.location.href='achievements.html'">🏆</div>
+                <div class="nav-btn btn-profile active">👤</div>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        window.onload = () => {
+            const savedName = localStorage.getItem('selt_user_name');
+            const savedEmail = localStorage.getItem('selt_user_email');
+            const savedAvatar = localStorage.getItem('selt_user_avatar');
+
+            if (savedName) document.getElementById('user-fullname').value = savedName;
+            if (savedEmail) document.getElementById('user-email').value = savedEmail;
+            if (savedAvatar) document.getElementById('avatar-preview').src = savedAvatar;
+        };
+
+        document.getElementById('avatar-input').onchange = function(e) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                document.getElementById('avatar-preview').src = reader.result;
+                localStorage.setItem('selt_user_avatar', reader.result);
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        };
+
+        function saveProfile() {
+            const name = document.getElementById('user-fullname').value;
+            const email = document.getElementById('user-email').value;
+            
+            localStorage.setItem('selt_user_name', name);
+            localStorage.setItem('selt_user_email', email);
+            
+            const msg = document.getElementById('save-msg');
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        }
+    </script>
+</body>
+</html>
