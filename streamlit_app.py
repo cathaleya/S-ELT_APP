@@ -41,7 +41,7 @@ def bundle_app():
         with open('styles_final.css', 'r', encoding='utf-8') as f:
             css_data = f.read()
 
-    # 2. Load all HTML pages and extract their <body> or <main> content
+    # 2. Load all HTML pages and extract their content
     pages_html = ""
     html_files = [f for f in os.listdir('.') if f.endswith('.html') and f != 'index.html']
     
@@ -57,12 +57,11 @@ def bundle_app():
             # Extract content between <body> tags or just the app-container
             match = re.search(r'<div class="app-container">(.*?)</div>\s*<nav class="bottom-nav">', content, re.DOTALL)
             if not match:
-                # Fallback for pages without bottom-nav (like splash/login)
                 match = re.search(r'<div class="app-container">(.*?)</div>', content, re.DOTALL)
             
             body_content = match.group(1) if match else "Content not found"
             
-            # Add bottom nav if it exists in the file
+            # Add bottom nav if it exists
             nav_match = re.search(r'<nav class="bottom-nav">(.*?)</nav>', content, re.DOTALL)
             nav_html = f'<nav class="bottom-nav">{nav_match.group(1)}</nav>' if nav_match else ""
 
@@ -75,7 +74,7 @@ def bundle_app():
             </div>
             """
 
-    # 3. Create the Master SPA Template
+    # 3. Create the Master SPA Template (Use double braces to escape f-string)
     master_html = f"""
     <!DOCTYPE html>
     <html>
@@ -96,36 +95,25 @@ def bundle_app():
         <script>
             // NAVIGATION ENGINE
             function navigate(page) {{
-                // Hide all pages
                 document.querySelectorAll('.selt-page').forEach(p => p.style.display = 'none');
-                // Show target page
                 const target = document.getElementById('page-' + page);
                 if (target) {{
                     target.style.display = 'block';
-                    // Scroll to top
                     window.scrollTo(0, 0);
-                    // Handle specific page initialization if needed
                     if (page === 'dashboard.html') updateDashboard();
                 }}
             }}
 
-            // Replace all location.href logic
-            window.location.assign = navigate; // Mock
-            // We'll use a global function instead
             function goTo(url) {{
                 const page = url.split('?')[0];
                 const params = url.split('?')[1];
-                if (params) {{
-                    // Handle completed modules logic
-                    if (params.includes('completed=')) {{
-                        const compId = params.split('completed=')[1];
-                        localStorage.setItem('temp_comp', compId);
-                    }}
+                if (params && params.includes('completed=')) {{
+                    const compId = params.split('completed=')[1];
+                    localStorage.setItem('temp_comp', compId);
                 }}
                 navigate(page);
             }}
 
-            // INTERCEPT ALL CLICKS
             document.addEventListener('click', function(e) {{
                 const a = e.target.closest('[onclick*="window.location.href"]');
                 if (a) {{
@@ -133,27 +121,24 @@ def bundle_app():
                     const attr = a.getAttribute('onclick');
                     const match = attr.match(/window\.location\.href\s*=\s*['"](.*?)['"]/);
                     if (match) goTo(match[1]);
-                }
+                }}
                 
                 const link = e.target.closest('a');
                 if (link && link.getAttribute('href') && link.getAttribute('href').endsWith('.html')) {{
                     e.preventDefault();
                     goTo(link.getAttribute('href'));
-                }
+                }}
             }});
 
-            // DASHBOARD UPDATE LOGIC (Since it's dynamic)
             function updateDashboard() {{
                 const compId = localStorage.getItem('temp_comp');
                 if (compId) {{
-                    // Trigger the feedback overlay logic in dashboard.html
-                    // (Simplified for SPA)
                     const overlay = document.querySelector('#page-dashboard.html #feedback-overlay');
                     if (overlay) {{
                         overlay.style.display = 'flex';
                         localStorage.removeItem('temp_comp');
                     }}
-                }
+                }}
             }}
 
             // Start with Splash
@@ -163,7 +148,7 @@ def bundle_app():
     </html>
     """
 
-    # 4. Final Base64 Image Replacement for all bundled pages
+    # 4. Final Base64 Image Replacement
     images = re.findall(r'src=["\'](.*?\.png|.*?\.jpg|.*?\.jpeg|.*?\.gif)["\']', master_html)
     bg_images = re.findall(r'url\(["\']?(.*?\.png|.*?\.jpg|.*?\.jpeg|.*?\.gif)["\']?\)', master_html)
     for img in list(set(images + bg_images)):
