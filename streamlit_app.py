@@ -4,7 +4,7 @@ import os
 import base64
 import re
 
-# Set Page Config MUST be the first Streamlit command
+# 1. Page Config
 st.set_page_config(
     page_title="S-ELT Mobile App",
     page_icon="🎤",
@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS to force mobile view and hide Streamlit UI
+# 2. Global CSS for Mobile Look
 st.markdown("""
     <style>
         #MainMenu {visibility: hidden;}
@@ -25,7 +25,7 @@ st.markdown("""
         }
         iframe {
             border: none;
-            height: 100vh !important;
+            height: 95vh !important;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -39,29 +39,20 @@ def get_base64(file_path):
 
 def process_html(html_file):
     if not os.path.exists(html_file):
-        # Default to splash if file missing
-        if html_file != "splash.html":
-            return process_html("splash.html")
-        return "<h1>Initialization Error</h1>"
+        return f"<h1>File not found: {html_file}</h1>"
     
     with open(html_file, 'r', encoding='utf-8') as f:
         content = f.read()
     
-    # 1. Inject Global CSS
+    # A. Inject CSS
     if os.path.exists('styles_final.css'):
         with open('styles_final.css', 'r', encoding='utf-8') as cf:
             css_data = cf.read()
-        # Replace the link tag or inject if not present
-        if '<link rel="stylesheet" href="styles_final.css">' in content:
-            content = content.replace('<link rel="stylesheet" href="styles_final.css">', f'<style>{css_data}</style>')
-        else:
-            content = content.replace('</head>', f'<style>{css_data}</style></head>')
+        content = content.replace('<link rel="stylesheet" href="styles_final.css">', f'<style>{css_data}</style>')
 
-    # 2. Convert Images to Base64 (Crucial for Streamlit Cloud)
-    # This ensures images load even if the iframe is on a different domain
+    # B. Base64 Images
     images = re.findall(r'src=["\'](.*?\.png|.*?\.jpg|.*?\.jpeg|.*?\.gif)["\']', content)
     bg_images = re.findall(r'url\(["\']?(.*?\.png|.*?\.jpg|.*?\.jpeg|.*?\.gif)["\']?\)', content)
-    
     for img in list(set(images + bg_images)):
         if img.startswith('http') or img.startswith('data:'): continue
         clean_img = img.split('?')[0]
@@ -70,39 +61,68 @@ def process_html(html_file):
             ext = clean_img.split('.')[-1]
             content = content.replace(img, f'data:image/{ext};base64,{b64}')
 
-    # 3. INTERCEPT NAVIGATION
-    # We transform all local links into parent-level query parameter updates.
-    # This allows the Streamlit app to 'route' between files.
-    
-    # A) HTML Links: <a href="page.html"> -> <a href="?p=page.html" target="_parent">
-    content = re.sub(r'href=["\']([^"\'\s]+\.html)(.*?)["\']', r'href="?p=\1\2" target="_parent"', content)
+    # C. ROBUST NAVIGATION (postMessage Strategy)
+    nav_script = """
+    <script>
+    function seltNavigate(page) {
+        window.parent.postMessage({
+            type: 'selt_nav',
+            page: page
+        }, '*');
+    }
+    document.addEventListener('click', function(e) {
+        let a = e.target.closest('a');
+        if (a && a.getAttribute('href') && a.getAttribute('href').endsWith('.html')) {
+            e.preventDefault();
+            seltNavigate(a.getAttribute('href'));
+        }
+    });
+    </script>
+    """
+    if '<body>' in content:
+        content = content.replace('<body>', '<body>' + nav_script)
+    else:
+        content = nav_script + content
 
-    # B) JS Redirections: window.location.href = 'page.html' -> window.parent.location.href = '?p=page.html'
-    # Handles: window.location.href='page.html', window.location.href = "page.html", etc.
-    content = re.sub(r'window\.location\.href\s*=\s*["\']([^"\'\s]+\.html)(.*?)["\']', r"window.parent.location.href='?p=\1\2'", content)
+    # Transform programmatic redirects: window.location.href = 'xxx' -> seltNavigate('xxx')
+    content = re.sub(r'window\.location\.href\s*=\s*["\']([^"\'\s]+)["\']', r"seltNavigate('\1')", content)
     
-    # C) Special handling for dashboard completion parameters
-    content = content.replace("dashboard.html?completed=", "?p=dashboard.html&completed=")
+    # Handle the specific dashboard completed logic
+    content = content.replace("dashboard.html?completed=", "dashboard.html&completed=")
 
     return content
 
-# --- MAIN ROUTING LOGIC ---
+# --- NAVIGATION ROUTER ---
 
-# 1. Capture query parameters
-# In modern Streamlit, st.query_params behaves like a dict
-query_p = st.query_params.get("p", "splash.html")
+# Use Query Params for persistent routing
+# Modern Streamlit (1.30+) uses st.query_params
+current_page = st.query_params.get("p", "splash.html")
 
-# 2. Prevent infinite loops or invalid files
-valid_files = [f for f in os.listdir('.') if f.endswith('.html')]
-if query_p not in valid_files:
-    query_p = "splash.html"
-
-# 3. Process and display the page
+# Render the page
 try:
-    final_html = process_html(query_p)
-    components.html(final_html, height=900, scrolling=False)
+    processed_content = process_html(current_page)
+    components.html(processed_content, height=900, scrolling=False)
 except Exception as e:
-    st.error(f"Error loading page: {e}")
-    if st.button("Back to Home"):
-        st.query_params.clear()
-        st.rerun()
+    st.error(f"Error: {e}")
+
+# LISTEN FOR NAVIGATION MESSAGES FROM THE IFRAME
+# This script runs in the PARENT window (Streamlit)
+st.markdown("""
+<script>
+const streamlitDoc = window.parent.document;
+window.addEventListener("message", (event) => {
+    if (event.data.type === "selt_nav") {
+        const page = event.data.page;
+        // Update URL query param to trigger Streamlit rerun
+        const url = new URL(window.location.href);
+        url.searchParams.set("p", page);
+        window.location.href = url.href;
+    }
+}, false);
+</script>
+""", unsafe_allow_html=True)
+
+# Add a tiny "Rescue" link in case navigation fails
+if st.button("Reset App (Back to Splash)"):
+    st.query_params.clear()
+    st.rerun()
