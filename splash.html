@@ -105,6 +105,22 @@
             background: radial-gradient(circle, rgba(190, 242, 100, 0.1) 0%, transparent 70%);
             pointer-events: none;
         }
+        .btn-start {
+            display: none;
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: #bef264;
+            color: #064e3b;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 900;
+            border: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: fadeIn 0.5s forwards;
+        }
     </style>
 </head>
 <body>
@@ -123,14 +139,16 @@
             <div class="loader-bar">
                 <div class="loader-progress"></div>
             </div>
+
+            <button id="start-btn" class="btn-start" onclick="window.location.href='login.html'">GET STARTED</button>
         </main>
     </div>
 
     <script>
-        // Automatic redirect after animation (extended slightly to let user read)
+        // Show button after animation instead of auto-redirect for better reliability
         setTimeout(() => {
-            window.location.href = 'login.html';
-        }, 4500);
+            document.getElementById('start-btn').style.display = 'block';
+        }, 3200);
     </script>
 </body>
 </html>
